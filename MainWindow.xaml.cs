@@ -1,4 +1,6 @@
-﻿using System;
+﻿//000000000000、、#define unsafe if(true)
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +21,6 @@ using System.Security.Permissions;
 using System.Windows.Threading;
 using System.Threading;
 
-
 public static class DispatcherHelper
 {
     [SecurityPermissionAttribute(SecurityAction.Demand, Flags = SecurityPermissionFlag.UnmanagedCode)]
@@ -39,11 +40,32 @@ public static class DispatcherHelper
 
 namespace swClassTableHint
 {
+    struct CTActv
+    {
+        enum type { CLASS,REST,IDLE };
+        DateTime actStart,actEnd;
+    };
+    enum animStat
+    {
+        DISAPPEAR,
+        PREENTER,
+        ENTERING,
+        POSTDISPR,
+        DISAPPEARING,
+        IDLE
+    };
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        private animStat E_STAT;
+        private int 
+            p_width = 320,
+            cur_width = 320,
+            p_height = 60,
+            p_slantDelta = 25;
+        private delegate void calcUI();
         void DelayMS(int milliSecond){
             int start = Environment.TickCount;
             while (Math.Abs(Environment.TickCount - start) < milliSecond)//毫秒
@@ -64,15 +86,16 @@ namespace swClassTableHint
         {
             string stime=mins.ToString();
             if (mins < 10) stime = "0" + stime;
-            CntMin.Text = stime;
+            unsafe { CntMin.Text = stime; }
         }
         private void initTrayIcon()
         {
             ContextMenuStrip ctxMS= new ContextMenuStrip();
-            nfIco.ContextMenuStrip= ctxMS;
             ToolStripMenuItem exitMI=new ToolStripMenuItem();
             exitMI.Text = "退出";
             exitMI.Click += ExitMI_Click;
+            ctxMS.Items.Add(exitMI);
+            nfIco.ContextMenuStrip= ctxMS;
         }
 
         private void ExitMI_Click(object? sender, EventArgs e)
@@ -91,26 +114,100 @@ namespace swClassTableHint
             exStyle |= WS_EX_TOOLWINDOW;
             SetWindowLong(hWnd, GWL_EXSTYLE, (IntPtr)exStyle);
         }
+        private void checkAvtivity()
+        {
 
+        }
+        private void calcAnimation()
+        {
+            // swaitch
+            switch (E_STAT)
+            {
+                case animStat.PREENTER:
+                    this.Visibility = Visibility.Visible;
+                    E_STAT = animStat.ENTERING;
+                    break;
+                case animStat.ENTERING:
+                    var a = 1;
+                    break;
+                case animStat.POSTDISPR:
+                    this.Visibility= Visibility.Hidden;
+                    E_STAT = animStat.DISAPPEAR;
+                    break;
+                case animStat.DISAPPEARING:
+                    var b = 1; break;
+                case animStat.IDLE:
+                    var c = 1; break;
+                case animStat.DISAPPEAR:
+                default:
+                    checkActity();
+                    break;
+            }
+        }
+
+        private void checkActity()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void calcParlg()
+        {
+            // p_width to be changed by calcAnimation()
+            this.Width = cur_width;
+            this.Left = (Screen.PrimaryScreen.Bounds.Width - this.ActualWidth) / 2;
+            pt_lu.StartPoint = new Point(p_slantDelta,0);
+            pt_ru.Point=new Point(cur_width,0);
+            pt_rd.Point=new Point(cur_width-p_slantDelta,p_height);
+            pt_ld.Point=new Point(0,p_height);
+            GC.Collect();
+        }
+        private void backMainLoop()
+        {
+            var tc = 0;
+            while (true)
+            {
+                tc++;
+                if(tc==1)unsafe
+                {
+                    // calcAnimation();
+                    // updateTimeHint(10);
+                    // calcParlg(); replace to: v
+                    cur_width = 320 + tc * 2;
+                    Dispatcher.Invoke(new calcUI(calcParlg));
+                    // 20FPS=50ms
+                    DelayMS(50);
+                    // consitnue
+                    continue;
+                }
+                DelayMS(1000);
+                if (tc > 5 ) tc = 0;
+            }
+        }
         public MainWindow()
         {
-            InitializeComponent();
-            nfIco = new NotifyIcon();
-            nfIco.Text = "课表展示";
-            nfIco.Visible = true;
-            initTrayIcon();
-            //initMouseCLTH();
-            Thread t = new Thread(() =>
-            {
-                for (int i= 0; i < 100; ++i)
+            //Task.Run(async () =>{
+                InitializeComponent();
+                nfIco = new NotifyIcon();
+                nfIco.Text = "课表展示";
+            // nfIco.Icon;
+                nfIco.Visible = true;
+                initTrayIcon();
+            //while (true)
+            Task.Run(backMainLoop);
+                //initMouseCLTH();
+                /*
+                Thread t = new Thread(() =>
                 {
-                    updateTimeHint(i);
-                    DelayMS(100);
-                }
-            });
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-            
+                    for (int i= 0; i < 100; ++i)
+                    {
+                        updateTimeHint(i);
+                        DelayMS(100);
+                    }
+                });
+                t.SetApartmentState(ApartmentState.STA);
+                t.Start();*/
+                // await 
+            //});
         }
         public void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -121,6 +218,7 @@ namespace swClassTableHint
             this.Topmost = true;
             this.Left = (Screen.PrimaryScreen.Bounds.Width - this.ActualWidth)/2;
             this.Top = 0; // Top float window
+            this.Visibility = Visibility.Visible;
         }
         public void MW_Closed(object sender, EventArgs e)
         {

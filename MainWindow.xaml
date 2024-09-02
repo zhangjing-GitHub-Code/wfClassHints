@@ -15,10 +15,10 @@
         <Path Stroke="Transparent" Fill="Black">
             <Path.Data>
                 <PathGeometry>
-                    <PathFigure StartPoint="75,0"  IsClosed="True">
-                        <LineSegment Point="370,0"></LineSegment>
-                        <LineSegment Point="345,60"></LineSegment>
-                        <LineSegment Point="50,60"></LineSegment>
+                    <PathFigure x:Name="pt_lu" StartPoint="75,0"  IsClosed="True">
+                        <LineSegment x:Name="pt_ru" Point="370,0"></LineSegment>
+                        <LineSegment x:Name="pt_rd" Point="345,60"></LineSegment>
+                        <LineSegment x:Name="pt_ld" Point="50,60"></LineSegment>
                     </PathFigure>
                 </PathGeometry>
             </Path.Data>
@@ -26,10 +26,10 @@
         <Path Stroke="Transparent" Fill="White">
             <Path.Data>
                 <PathGeometry>
-                    <PathFigure StartPoint="230,15"  IsClosed="True">
-                        <LineSegment Point="280,15"></LineSegment>
-                        <LineSegment Point="270,45"></LineSegment>
-                        <LineSegment Point="220,45"></LineSegment>
+                    <PathFigure StartPoint="230,15" x:Name="spt_lu"  IsClosed="True">
+                        <LineSegment x:Name="spt_ru" Point="280,15"></LineSegment>
+                        <LineSegment x:Name="spt_rd" Point="270,45"></LineSegment>
+                        <LineSegment x:Name="spt_ld" Point="220,45"></LineSegment>
                     </PathFigure>
                 </PathGeometry>
             </Path.Data>
