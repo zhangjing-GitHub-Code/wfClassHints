@@ -1,0 +1,41 @@
+﻿<Window x:Class="swClassTableHint.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:swClassTableHint"
+        mc:Ignorable="d"
+        Title="ClassTable_show" Height="60" Background="Transparent" Width="400" IsHitTestVisible="False" SourceInitialized="OnSourceInit" WindowStartupLocation="Manual"  ShowInTaskbar="False"  WindowStyle="None"  WindowState="Normal" MouseLeftButtonDown="Window_MouseLeftButtonDown" Closed="MW_Closed" MouseRightButtonDown="MW_MRBdown" SnapsToDevicePixels="True" ResizeMode="NoResize"  AllowsTransparency="True" Loaded="MW_Loaded">
+    <Grid>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Name="RExit" Header="退出" Click="C_EXIT" />
+            </ContextMenu>
+        </Grid.ContextMenu>
+        <Path Stroke="Transparent" Fill="Black">
+            <Path.Data>
+                <PathGeometry>
+                    <PathFigure StartPoint="75,0"  IsClosed="True">
+                        <LineSegment Point="370,0"></LineSegment>
+                        <LineSegment Point="345,60"></LineSegment>
+                        <LineSegment Point="50,60"></LineSegment>
+                    </PathFigure>
+                </PathGeometry>
+            </Path.Data>
+        </Path>
+        <Path Stroke="Transparent" Fill="White">
+            <Path.Data>
+                <PathGeometry>
+                    <PathFigure StartPoint="230,15"  IsClosed="True">
+                        <LineSegment Point="280,15"></LineSegment>
+                        <LineSegment Point="270,45"></LineSegment>
+                        <LineSegment Point="220,45"></LineSegment>
+                    </PathFigure>
+                </PathGeometry>
+            </Path.Data>
+        </Path>
+        <TextBlock FontSize="20" TextAlignment="Justify" x:Name="ClassHint" Text="距离下节课还有" Foreground="#FF99DFFD" Margin="74,16,184,16"/>
+        <TextBlock FontSize="20" TextAlignment="Justify" x:Name="CntMin" Text="00" Foreground="#FFFF3B6E" Margin="236,18,140,19" FontWeight="Bold"/>
+        <TextBlock FontSize="20" TextAlignment="Justify"  Text="分钟" Foreground="#FF99DFFD" Margin="294,18,66,18"/>
+    </Grid>
+</Window>
