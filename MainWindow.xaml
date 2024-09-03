@@ -34,8 +34,10 @@
                 </PathGeometry>
             </Path.Data>
         </Path>
+        <Grid x:Name="HintsText">
         <TextBlock FontSize="20" TextAlignment="Justify" x:Name="ClassHint" Text="距离下节课还有" Foreground="#FF99DFFD" Margin="74,16,184,16"/>
         <TextBlock FontSize="20" TextAlignment="Justify" x:Name="CntMin" Text="00" Foreground="#FFFF3B6E" Margin="236,18,140,19" FontWeight="Bold"/>
         <TextBlock FontSize="20" TextAlignment="Justify"  Text="分钟" Foreground="#FF99DFFD" Margin="294,18,66,18"/>
+        </Grid>
     </Grid>
 </Window>

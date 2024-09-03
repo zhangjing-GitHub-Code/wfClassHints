@@ -61,11 +61,24 @@ namespace swClassTableHint
     {
         private animStat E_STAT;
         private int 
-            p_width = 320,
-            cur_width = 320,
+            p_width = 425,
+            cur_width = 50,
             p_height = 60,
             p_slantDelta = 25;
+        private int
+            tmp_frmcnt = 0,
+            ent_frames = 25,
+            dspr_frames = 50,
+            min_length = 50;
+        private int
+            ent_lenpf = 0,
+            dspr_lenpf = 0;
         private delegate void calcUI();
+        private delegate void setVisible(Visibility vi,FrameworkElement target);
+        private void sVisible(Visibility vi,FrameworkElement target)
+        {
+            target.Visibility = vi;
+        }
         void DelayMS(int milliSecond){
             int start = Environment.TickCount;
             while (Math.Abs(Environment.TickCount - start) < milliSecond)//毫秒
@@ -124,22 +137,36 @@ namespace swClassTableHint
             switch (E_STAT)
             {
                 case animStat.PREENTER:
-                    this.Visibility = Visibility.Visible;
+                    // this.Visibility = Visibility.Visible;
+                    Dispatcher.Invoke(new setVisible(sVisible),Visibility.Visible,this.Visibility);
                     E_STAT = animStat.ENTERING;
+                    tmp_frmcnt = 0;
                     break;
                 case animStat.ENTERING:
-                    var a = 1;
+                    cur_width = min_length + ent_lenpf * tmp_frmcnt;
+                    ++tmp_frmcnt;
+                    if (tmp_frmcnt >= ent_frames)
+                    {
+                        E_STAT = animStat.IDLE;
+                        // if(E_STAT==animStat.IDLE)
+                        Dispatcher.Invoke(new setVisible(sVisible),Visibility.Visible,HintsText);
+                        tmp_frmcnt = 0;
+                    }
                     break;
                 case animStat.POSTDISPR:
-                    this.Visibility= Visibility.Hidden;
+                    // this.Visibility= Visibility.Hidden;
+                    Dispatcher.Invoke(new setVisible(sVisible),Visibility.Hidden,this);
                     E_STAT = animStat.DISAPPEAR;
                     break;
                 case animStat.DISAPPEARING:
-                    var b = 1; break;
+                    cur_width = min_length + dspr_lenpf * (dspr_frames - tmp_frmcnt);
+                    ++tmp_frmcnt;
+                    if (tmp_frmcnt == dspr_frames)E_STAT=animStat.POSTDISPR;
+                    break;
                 case animStat.IDLE:
-                    var c = 1; break;
                 case animStat.DISAPPEAR:
                 default:
+                    
                     checkActity();
                     break;
             }
@@ -147,7 +174,7 @@ namespace swClassTableHint
 
         private void checkActity()
         {
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
 
         private void calcParlg()
@@ -159,32 +186,36 @@ namespace swClassTableHint
             pt_ru.Point=new Point(cur_width,0);
             pt_rd.Point=new Point(cur_width-p_slantDelta,p_height);
             pt_ld.Point=new Point(0,p_height);
-            GC.Collect();
+            // GC.Collect();
         }
         private void backMainLoop()
         {
-            var tc = 0;
+            E_STAT = animStat.PREENTER;
+            // var tc = 0;
             while (true)
             {
-                tc++;
-                if(tc==1)unsafe
+                // tc++;
+                //if(tc==1)
+                    unsafe
                 {
-                    // calcAnimation();
+                    calcAnimation();
                     // updateTimeHint(10);
                     // calcParlg(); replace to: v
-                    cur_width = 320 + tc * 2;
+                    // cur_width = 320 + tc * 2;
                     Dispatcher.Invoke(new calcUI(calcParlg));
                     // 20FPS=50ms
-                    DelayMS(50);
+                    DelayMS(1000/30-2);
                     // consitnue
                     continue;
                 }
-                DelayMS(1000);
-                if (tc > 5 ) tc = 0;
+                // DelayMS(1000);
+                // if (tc > 5 ) tc = 0;
             }
         }
         public MainWindow()
         {
+            ent_lenpf = (p_width - min_length) / ent_frames;
+            dspr_lenpf = (p_width - min_length) / dspr_frames;
             //Task.Run(async () =>{
                 InitializeComponent();
                 nfIco = new NotifyIcon();
@@ -219,6 +250,7 @@ namespace swClassTableHint
             this.Left = (Screen.PrimaryScreen.Bounds.Width - this.ActualWidth)/2;
             this.Top = 0; // Top float window
             this.Visibility = Visibility.Visible;
+            HintsText.Visibility = Visibility.Hidden;
         }
         public void MW_Closed(object sender, EventArgs e)
         {
